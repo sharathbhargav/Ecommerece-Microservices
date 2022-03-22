@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/APIGateway/APIGateway.iml" filepath="$PROJECT_DIR$/APIGateway/APIGateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ConfigServer/ConfigServer.iml" filepath="$PROJECT_DIR$/ConfigServer/ConfigServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Ecommerece-Microservices.iml" filepath="$PROJECT_DIR$/.idea/Ecommerece-Microservices.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ServiceRegistry/ServiceRegistry.iml" filepath="$PROJECT_DIR$/ServiceRegistry/ServiceRegistry.iml" />
+    </modules>
+  </component>
+</project>
