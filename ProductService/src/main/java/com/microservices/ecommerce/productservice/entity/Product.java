@@ -8,15 +8,20 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+import javax.persistence.Transient;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document
+@Document(collection = "product")
 public class Product {
     @Id
-    String productId;
+    String id;
+
+    @Transient
+            public static final String SEQUENCE_NAME = "product_sequence";
+    Long productId;
     @NonNull
     List<String> category;
     @NonNull

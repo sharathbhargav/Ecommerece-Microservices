@@ -16,12 +16,12 @@ import java.util.List;
 public class CartServiceImpl implements CartService {
 
     @Autowired
-    private CartUserRepository cartUserRepo;
+    private CartUserRepository cartUserRepository;
     @Autowired
     private CartProductRepository cartProdRepo;
 
     public List<CartProduct> getCartItemsByUserId(Long userId) {
-        CartUser cartUser = cartUserRepo.findCartByUserId(userId);
+        CartUser cartUser = cartUserRepository.findCartByUserId(userId);
         List<CartProduct> cartItems = null;
         if (cartUser != null){
             cartItems = cartProdRepo.findByCartId(cartUser.getCartId());
@@ -30,7 +30,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public int deleteCartItem(Long userId, Long productId) {
-        CartUser cartUser = cartUserRepo.findCartByUserId(userId);
+        CartUser cartUser = cartUserRepository.findCartByUserId(userId);
         int deleteSuccess = 0;
         if (cartUser != null){
             deleteSuccess = cartProdRepo.deleteByCartIdProductId(cartUser.getCartId(), productId);
@@ -39,7 +39,7 @@ public class CartServiceImpl implements CartService {
     }
 
     public int updateCartItem(Long userId, Long productId, Long quantity) {
-        CartUser cartUser = cartUserRepo.findCartByUserId(userId);
+        CartUser cartUser = cartUserRepository.findCartByUserId(userId);
         if (cartUser != null){
             Long cartId = cartUser.getCartId();
             CartProduct cartItem = cartProdRepo.findByCartIdProductId(cartId, productId);
@@ -58,12 +58,12 @@ public class CartServiceImpl implements CartService {
     }
 
     public Boolean deleteCartByUserId(Long userId) {
-        CartUser cartUser = cartUserRepo.findCartByUserId(userId);
+        CartUser cartUser = cartUserRepository.findCartByUserId(userId);
         if (cartUser != null){
             Long cartId = cartUser.getCartId();
             int deleteItemCount = cartProdRepo.deleteAllByCartId(cartId);
             if (deleteItemCount>0){
-                cartUserRepo.deleteById(cartId);
+                cartUserRepository.deleteById(cartId);
                 return true;
             }
         }
@@ -77,7 +77,7 @@ public class CartServiceImpl implements CartService {
     public Boolean deleteCartByCartId(Long cartId) {
         int deleteItemCount = cartProdRepo.deleteAllByCartId(cartId);
         if (deleteItemCount>0){
-            cartUserRepo.deleteById(cartId);
+            cartUserRepository.deleteById(cartId);
         }
         return true;
     }

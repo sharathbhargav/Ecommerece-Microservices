@@ -1,3 +1,6 @@
+server:
+  port: 9005
+dummy: variable
 spring:
   data:
     mongodb:
@@ -8,5 +11,3 @@ spring:
       port: 27017
       host: localhost
 
-server:
-  port: 9003
