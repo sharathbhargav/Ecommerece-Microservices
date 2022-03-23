@@ -23,3 +23,4 @@ public class CartProduct {
     )
     private CartUser cartUser;
 }
+// Data class used in inventory service. Changes should be reflected in both services

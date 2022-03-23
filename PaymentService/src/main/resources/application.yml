@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: Inventory
+
+kafkaService:
+  bootstrapAddress: localhost:9092
+  paymentManagement:
+    incomingTopicName: order_management_to_payment_service
+    incomingGroupId: order_payment_group
