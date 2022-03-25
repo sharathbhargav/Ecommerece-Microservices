@@ -31,3 +31,4 @@ public class CartProduct {
 //    public CartProduct(Long cartId, Long productId, Long quantity, CartUser cartUser) {
 //    }
 }
+// Data class used in inventory service. Changes should be reflected in both services
