@@ -1,39 +1,43 @@
 package com.microservices.ecommerce.cartservice.repository;
 
 import com.microservices.ecommerce.cartservice.entity.CartProduct;
+import com.microservices.ecommerce.cartservice.entity.CartProductId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface CartProductRepository extends JpaRepository<CartProduct, Long> {
+@Component
+public interface CartProductRepository extends JpaRepository<CartProduct, CartProductId> {
 
     @Query(
             value = "SELECT * FROM cart_product c WHERE c.cart_id = ?1",
             nativeQuery = true
     )
-    List<CartProduct> findByCartId(Long cartId);
+    Optional<List<CartProduct>> findByCartId(Long cartId);
 
     @Modifying
     @Query(
             value = "DELETE FROM cart_product c WHERE c.cart_id = ?1 AND c.product_id = ?2",
             nativeQuery = true
     )
-    int deleteByCartIdProductId(Long cartId, Long productId);
+    long deleteByCartIdProductId(Long cartId, Long productId);
 
     @Query(
             value = "SELECT * FROM cart_product c WHERE c.cart_id = :cartId AND c.product_id = :productId",
             nativeQuery = true
     )
-    CartProduct findByCartIdProductId(Long cartId, Long productId);
+    Optional<CartProduct> findByCartIdProductId(Long cartId, Long productId);
 
     @Modifying
     @Query(
             value = "DELETE FROM cart_product c WHERE c.cart_id = :cartId",
             nativeQuery = true
     )
-    int deleteAllByCartId(Long cartId);
+    long deleteAllByCartId(Long cartId);
 }

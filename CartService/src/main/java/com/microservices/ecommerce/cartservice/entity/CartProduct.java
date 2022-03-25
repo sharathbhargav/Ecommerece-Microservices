@@ -3,18 +3,23 @@ package com.microservices.ecommerce.cartservice.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+
+import javax.persistence.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+//@IdClass(CartProductId.class)
+@Table(name="cart_product")
 public class CartProduct {
-    public long cartId;
-    public long productId;
-    public long quantity;
+//    @Id
+//    public long cartId;
+//    @Id
+//    public long productId;
+    @EmbeddedId
+    private CartProductId cartProductId;
+    private long quantity;
 
     @ManyToOne()
     @JoinColumn(
@@ -22,4 +27,7 @@ public class CartProduct {
             referencedColumnName = "cartId"
     )
     private CartUser cartUser;
+
+//    public CartProduct(Long cartId, Long productId, Long quantity, CartUser cartUser) {
+//    }
 }

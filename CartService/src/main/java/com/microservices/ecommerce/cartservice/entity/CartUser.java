@@ -4,18 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(name="cart_user")
 public class CartUser {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long cartId;
     public long userId;
+
+//    public CartUser(Long userId) {
+//    }
 }
