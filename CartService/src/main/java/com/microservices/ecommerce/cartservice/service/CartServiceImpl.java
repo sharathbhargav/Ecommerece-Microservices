@@ -1,15 +1,16 @@
 package com.microservices.ecommerce.cartservice.service;
 
 import com.microservices.ecommerce.cartservice.entity.CartProduct;
+import com.microservices.ecommerce.cartservice.entity.CartProductId;
 import com.microservices.ecommerce.cartservice.entity.CartUser;
 import com.microservices.ecommerce.cartservice.repository.CartProductRepository;
 import com.microservices.ecommerce.cartservice.repository.CartUserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -18,68 +19,89 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartUserRepository cartUserRepository;
     @Autowired
-    private CartProductRepository cartProdRepo;
+    private CartProductRepository cartProductRepository;
 
-    public List<CartProduct> getCartItemsByUserId(Long userId) {
-        CartUser cartUser = cartUserRepository.findCartByUserId(userId);
-        List<CartProduct> cartItems = null;
-        if (cartUser != null){
-            cartItems = cartProdRepo.findByCartId(cartUser.getCartId());
-        }
-        return cartItems;
-    }
 
-    public int deleteCartItem(Long userId, Long productId) {
-        CartUser cartUser = cartUserRepository.findCartByUserId(userId);
-        int deleteSuccess = 0;
-        if (cartUser != null){
-            deleteSuccess = cartProdRepo.deleteByCartIdProductId(cartUser.getCartId(), productId);
-        }
-        return deleteSuccess;
-    }
-
-    public int updateCartItem(Long userId, Long productId, Long quantity) {
-        CartUser cartUser = cartUserRepository.findCartByUserId(userId);
-        if (cartUser != null){
-            Long cartId = cartUser.getCartId();
-            CartProduct cartItem = cartProdRepo.findByCartIdProductId(cartId, productId);
-            if (cartItem != null){
-                cartItem.setQuantity(quantity);
-                cartProdRepo.save(cartItem);
-                return 1;
+    public List<CartProduct> getCartItemsByUserId(Long userId) throws Exception {
+        Optional<CartUser> cartUser = cartUserRepository.findCartByUserId(userId);
+        Optional<List<CartProduct>> cartItems;
+        if (cartUser.isPresent()){
+            Long cartId = cartUser.get().getCartId();
+            cartItems = cartProductRepository.findByCartId(cartId);
+            if (cartItems.isPresent()){
+                return cartItems.get();
             }
             else{
-                CartProduct cartProduct = new CartProduct(cartId, productId, 1, cartUser);
-                cartProdRepo.save(cartProduct);
-                return 1;
+                throw new Exception("No items for the cart");
             }
+        }
+        return null;
+    }
+
+    public long deleteCartItem(Long userId, Long productId) {
+        Optional<CartUser> cartUser = cartUserRepository.findCartByUserId(userId);
+        if (cartUser.isPresent()){
+            Long cartId = cartUser.get().getCartId();
+            long numRecordsDeleted = cartProductRepository.deleteByCartIdProductId(cartId, productId);
+            return numRecordsDeleted;
         }
         return 0;
     }
 
-    public Boolean deleteCartByUserId(Long userId) {
-        CartUser cartUser = cartUserRepository.findCartByUserId(userId);
-        if (cartUser != null){
-            Long cartId = cartUser.getCartId();
-            int deleteItemCount = cartProdRepo.deleteAllByCartId(cartId);
-            if (deleteItemCount>0){
-                cartUserRepository.deleteById(cartId);
-                return true;
+    public CartProduct updateCartItem(Long userId, Long productId, Long quantity) {
+        Optional<CartUser> cartUser = cartUserRepository.findCartByUserId(userId);
+        if (cartUser.isPresent()){
+            Long cartId = cartUser.get().getCartId();
+            Optional<CartProduct> cartItemOptional = cartProductRepository.findByCartIdProductId(cartId, productId);
+            if (cartItemOptional.isPresent()){
+                CartProduct cartProduct = cartItemOptional.get();
+                cartProduct.setQuantity(quantity);
+                CartProduct response = cartProductRepository.save(cartProduct);
+                return response;
+            }
+            else{
+                CartProductId cartProductId = new CartProductId(cartId, productId);
+                CartProduct cartProduct = new CartProduct(cartProductId, quantity, cartUser.get());
+                CartProduct response = cartProductRepository.save(cartProduct);
+                return response;
             }
         }
-        return false;
-    }
-
-    public List<CartProduct> getCartItemsByCartId(Long cartId) {
-        return cartProdRepo.findByCartId(cartId);
-    }
-
-    public Boolean deleteCartByCartId(Long cartId) {
-        int deleteItemCount = cartProdRepo.deleteAllByCartId(cartId);
-        if (deleteItemCount>0){
-            cartUserRepository.deleteById(cartId);
+        else{
+            //TODO: change 1 below later
+            CartUser cartUser1 = new CartUser(1,userId);
+            CartUser savedUser = cartUserRepository.save(cartUser1);
+            CartProductId cartProductId = new CartProductId(savedUser.getCartId(), productId);
+            CartProduct cartProduct = new CartProduct(cartProductId, quantity, savedUser);
+            CartProduct response = cartProductRepository.save(cartProduct);
+            return response;
         }
-        return true;
+    }
+
+    public long deleteCartByUserId(Long userId) {
+        Optional<CartUser> cartUser = cartUserRepository.findCartByUserId(userId);
+        if (cartUser.isPresent()){
+            Long cartId = cartUser.get().getCartId();
+            long deleteItemCountProduct = cartProductRepository.deleteAllByCartId(cartId);
+            cartUserRepository.deleteById(cartId);
+            return deleteItemCountProduct;
+        }
+        return 0;
+    }
+
+    public List<CartProduct> getCartItemsByCartId(Long cartId) throws Exception {
+        Optional<List<CartProduct>> cartProducts = cartProductRepository.findByCartId(cartId);
+        if (cartProducts.isPresent()){
+            return cartProducts.get();
+        }
+        else{
+            throw new Exception("No items found for cartId: "+cartId);
+        }
+    }
+
+    public long deleteCartByCartId(Long cartId) {
+        long deleteItemCount = cartProductRepository.deleteAllByCartId(cartId);
+        cartUserRepository.deleteById(cartId);
+        return deleteItemCount;
     }
 }
 
