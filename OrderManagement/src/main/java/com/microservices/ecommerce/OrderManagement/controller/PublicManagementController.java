@@ -10,6 +10,7 @@ public class PublicManagementController {
     @PostMapping("/create/{id}")
     public void createOrderForUserId(@PathVariable("id") Long userId){
         log.info("Post request of /create/"+userId);
+        //Todo get cart items
     }
 
     @GetMapping("/status/{id}")
